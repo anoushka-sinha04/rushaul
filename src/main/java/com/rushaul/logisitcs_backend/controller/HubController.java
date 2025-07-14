@@ -1,0 +1,47 @@
+package com.rushaul.logisitcs_backend.controller;
+
+import com.rushaul.logisitcs_backend.model.Hub;
+import com.rushaul.logisitcs_backend.service.HubService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/hubs")
+public class HubController {
+
+    private final HubService hubService;
+
+    @Autowired
+    public HubController(HubService hubService) { this.hubService = hubService; }
+
+    @PostMapping
+    public ResponseEntity<Hub> createHub(@RequestBody Hub hub) {
+        return ResponseEntity.ok(hubService.createHub(hub));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Hub> getHubById(@PathVariable Long id) {
+        return hubService.getHubById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Hub>> getAllHubs() {
+        return ResponseEntity.ok(hubService.getAllHubs());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Hub> updateHub(@PathVariable Long id, @RequestBody Hub hubDetails) {
+        return ResponseEntity.ok(hubService.updateHub(id, hubDetails));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteHub(@PathVariable Long id) {
+        hubService.deleteHub(id);
+        return ResponseEntity.noContent().build();
+    }
+}

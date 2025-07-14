@@ -1,0 +1,202 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: anoushkasinha
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+              - column:
+                  name: phone_number
+                  type: VARCHAR(50)
+              - column:
+                  name: role
+                  type: VARCHAR(50)
+              - column:
+                  name: address
+                  type: VARCHAR(255)
+  - changeSet:
+      id: 2
+      author: anoushkasinha
+      changes:
+        - createTable:
+            tableName: hubs
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: location
+                  type: VARCHAR(500)
+              - column:
+                  name: latitude
+                  type: DOUBLE PRECISION
+              - column:
+                  name: longitude
+                  type: DOUBLE PRECISION
+              - column:
+                  name: phone_number
+                  type: VARCHAR(50)
+  - changeSet:
+      id: 3
+      author: anoushkasinha
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: external_order_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: customer_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: seller_name
+                  type: VARCHAR(255)
+              - column:
+                  name: seller_address
+                  type: VARCHAR(500)
+              - column:
+                  name: destination_address
+                  type: VARCHAR(500)
+              - column:
+                  name: pickup_hub_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: destination_hub_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: otp_pickup
+                  type: VARCHAR(10)
+              - column:
+                  name: otp_delivery
+                  type: VARCHAR(10)
+              - column:
+                  name: placed_at
+                  type: TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: customer_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_orders_customer
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: pickup_hub_id
+            referencedTableName: hubs
+            referencedColumnNames: id
+            constraintName: fk_orders_pickup_hub
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: destination_hub_id
+            referencedTableName: hubs
+            referencedColumnNames: id
+            constraintName: fk_orders_destination_hub
+  - changeSet:
+      id: 4
+      author: anoushkasinha
+      changes:
+        - createTable:
+            tableName: delivery_assignments
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: order_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: personnel_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: assigned_at
+                  type: TIMESTAMP
+              - column:
+                  name: confirmed_at
+                  type: TIMESTAMP
+              - column:
+                  name: completed_at
+                  type: TIMESTAMP
+        - addForeignKeyConstraint:
+            baseTableName: delivery_assignments
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            constraintName: fk_assignments_order
+        - addForeignKeyConstraint:
+            baseTableName: delivery_assignments
+            baseColumnNames: personnel_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_assignments_personnel
+  - changeSet:
+      id: 5
+      author: anoushkasinha
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: address
+                  type: VARCHAR(255)
