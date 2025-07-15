@@ -11,33 +11,42 @@ This project is designed to be a clean, modular starting point for building more
 ---
 
 ## 🛠️ Tech Stack
-- **Backend**: Spring Boot (Java 21)
-- **Database**: PostgreSQL
-- **ORM**: JPA / Hibernate
-- **Schema Management**: Liquibase (YAML-based changelogs)
-- **Testing Tools**: Postman
+- Spring Boot (Java 21)
+- PostgreSQL
+- Spring Data JPA / Hibernate
+- Liquibase (YAML-based changelogs)
+- Postman (for API testing)
+- Spring Security (JWT)
 
 ---
 
 ## 📂 Modules & Features
 
-### 1. 👤 User Management
+### 1. User Management
 - Supports roles like customers and delivery personnel
 - Unique username + email fields
 - Secure password storage ready (hashing can be added later)
 
-### 2. 🏢 Hubs
+### 2. Hubs
 - Stores details of logistics hubs (location, contact, coordinates)
 - Ensures unique hub names for clarity
 
-### 3. 📦 Order Management
+### 3. Order Management
 - Orders include seller and destination info
 - Generates OTPs for pickup and delivery
 - Tied to customer and hubs via foreign keys
 
-### 4. 🚴 Delivery Assignments
+### 4. Delivery Assignments
 - Assigns orders to personnel
 - Tracks assignment status with timestamps
+
+### 5. Role-based Access
+- Efficient authorization
+- provides access based on ADMIN/USER/DRIVER
+
+### 6. APIs
+- Protected by JWT
+- Documentation via Swagger UI
 
 ---
 
@@ -49,8 +58,9 @@ This project is designed to be a clean, modular starting point for building more
 - `GET /api/users` — List all users  
 - `POST /api/users/createUser` — Create a user  
 - (Similar routes exist for hubs, orders, and assignments via their respective controllers)
-
-> Note: No Spring Security is enforced. APIs are open for testing. Use Postman to interact.
+- `POST /api/auth/register` — Register a new user (default: `USER` wherein USER = CUSTOMER)
+- `POST /api/auth/login` — Login and receive a JWT token
+- Use the token in the `Authorization: Bearer <token>` header for protected endpoints
 
 ---
 
@@ -69,18 +79,15 @@ This project is designed to be a clean, modular starting point for building more
 - PostgreSQL running locally
 
 ### Steps:
-1. Clone this repo  
-   `git clone https://github.com/your-username/rushaul.git`
-2. Configure DB connection in `application.properties`
-3. Run the application:  
-   `mvn spring-boot:run`
-4. Use Postman or browser to test endpoints (`http://localhost:8080/api/users` etc.)
+1. Clone this repo  `git clone https://github.com/your-username/rushaul.git`
+2. Set up PostgreSQL and configure DB connection in `application.properties`
+3. Run the application:  `mvn spring-boot:run`
+4. Swagger Ui: `http://localhost:8080/swagger-ui/index.html`
+5. Use Postman or browser to test endpoints (`http://localhost:8080/api/users` etc.)
 
 ---
 
 ## 📌 To Do (Future Enhancements)
-- Add Spring Security (JWT-based)
-- Integrate Swagger UI for API docs
 - Dockerize for production setup
 - Add pagination/search filters on list endpoints
 
