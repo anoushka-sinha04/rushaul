@@ -1,9 +1,11 @@
 package com.rushaul.logisitcs_backend.controller;
 
+import com.rushaul.logisitcs_backend.dto.OrderRequestDTO;
 import com.rushaul.logisitcs_backend.model.Order;
 import com.rushaul.logisitcs_backend.model.OrderStatus;
 import com.rushaul.logisitcs_backend.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,10 +19,23 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
-        Order created = orderService.createOrder(order);
-        return ResponseEntity.ok(created);
+    public ResponseEntity<Order> createOrder(@RequestBody OrderRequestDTO dto) {
+        Order createdOrder = orderService.createOrder(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }
+
+    @PostMapping("/verify-otp/pickup/{orderId}")
+    public ResponseEntity<String> verifyPickupOtp(@PathVariable Long orderId, @RequestBody String otp) {
+        boolean success = orderService.verifyPickupOtp(orderId, otp);
+        return ResponseEntity.ok(success ? "Pickup verified." : "Invalid OTP.");
+    }
+
+    @PostMapping("/verify-otp/delivery/{orderId}")
+    public ResponseEntity<String> verifyDeliveryOtp(@PathVariable Long orderId, @RequestBody String otp) {
+        boolean success = orderService.verifyDeliveryOtp(orderId, otp);
+        return ResponseEntity.ok(success ? "Delivery verified." : "Invalid OTP.");
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable("orderId") Long orderId) {

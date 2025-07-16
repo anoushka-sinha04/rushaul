@@ -1,5 +1,7 @@
 package com.rushaul.logisitcs_backend.controller;
 
+import com.rushaul.logisitcs_backend.dto.DeliveryAssignmentRequestDTO;
+import com.rushaul.logisitcs_backend.dto.DeliveryAssignmentResponseDTO;
 import com.rushaul.logisitcs_backend.model.DeliveryAssignment;
 import com.rushaul.logisitcs_backend.service.DeliveryAssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +21,10 @@ public class DeliveryAssignmentController {
         this.deliveryAssignmentService = deliveryAssignmentService;
     }
 
-    @PostMapping
-    public ResponseEntity<DeliveryAssignment> assignDelivery(@RequestBody DeliveryAssignment assignment) {
-        return ResponseEntity.ok(deliveryAssignmentService.assignDelivery(assignment));
+    @PostMapping("/assign")
+    public ResponseEntity<DeliveryAssignmentResponseDTO> assignDelivery(@RequestBody DeliveryAssignmentRequestDTO dto) {
+        DeliveryAssignmentResponseDTO response = deliveryAssignmentService.assignPersonnel(dto);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

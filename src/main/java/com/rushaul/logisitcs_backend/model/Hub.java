@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 
 
 @Entity
-@Table(name = "hub")
+@Table(name = "hubs")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,5 +23,6 @@ public class Hub {
     private Double latitude;
     private Double longitude;
 
-    private String contactNumber;
+    @Column(name = "phone_number")
+    private String phoneNumber;
 }

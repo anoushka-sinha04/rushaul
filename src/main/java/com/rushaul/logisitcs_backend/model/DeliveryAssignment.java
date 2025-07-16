@@ -21,6 +21,10 @@ public class DeliveryAssignment {
     @JoinColumn(name = "personnel_id", nullable = false)
     private User personnel;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AssignmentStatus status;
