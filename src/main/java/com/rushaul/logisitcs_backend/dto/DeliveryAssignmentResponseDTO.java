@@ -3,6 +3,8 @@ package com.rushaul.logisitcs_backend.dto;
 import java.sql.Timestamp;
 
 public class DeliveryAssignmentResponseDTO {
+
+    // -------------------------------------------------- FIELDS
     private Long id;
     private String orderExternalId;
     private String personnelName;
@@ -11,7 +13,7 @@ public class DeliveryAssignmentResponseDTO {
     private Timestamp confirmedAt;
     private Timestamp completedAt;
 
-    // ✅ Constructor
+    // -------------------------------------------------- CONSTRUCTOR
     public DeliveryAssignmentResponseDTO(Long id, String orderExternalId, String personnelName, String status,
                                          Timestamp assignedAt, Timestamp confirmedAt, Timestamp completedAt) {
         this.id = id;
@@ -23,7 +25,7 @@ public class DeliveryAssignmentResponseDTO {
         this.completedAt = completedAt;
     }
 
-    // ✅ Getters & Setters
+    // -------------------------------------------------- GETTERS & SETTERS
     public Long getId() {
         return id;
     }

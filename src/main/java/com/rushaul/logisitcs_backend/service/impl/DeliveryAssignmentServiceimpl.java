@@ -21,10 +21,12 @@ import java.util.Optional;
 @Service
 public class DeliveryAssignmentServiceimpl implements DeliveryAssignmentService {
 
+    // -------------------------------------------------- DEPENDENCIES
     private final DeliveryAssignmentRepository deliveryAssignmentRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
+    // -------------------------------------------------- CONSTRUCTOR
     @Autowired
     public DeliveryAssignmentServiceimpl(DeliveryAssignmentRepository deliveryAssignmentRepository,
                                          OrderRepository orderRepository,
@@ -34,21 +36,30 @@ public class DeliveryAssignmentServiceimpl implements DeliveryAssignmentService 
         this.userRepository = userRepository;
     }
 
+
+    // -------------------------------------------------- ASSIGN PERSONNEL
     @Override
     public DeliveryAssignmentResponseDTO assignPersonnel(DeliveryAssignmentRequestDTO dto) {
+
+        // Fetch Order
         Order order = orderRepository.findById(dto.getOrderId())
                 .orElseThrow(() -> new RuntimeException("Order Not Found"));
+
+        // Fetch Personnel
         User personnel = userRepository.findById(dto.getPersonnelId())
                 .orElseThrow(() -> new RuntimeException("Personnel Not Found"));
 
+        // Create New Assignment
         DeliveryAssignment assignment = new DeliveryAssignment();
         assignment.setOrder(order);
         assignment.setPersonnel(personnel);
         assignment.setStatus(AssignmentStatus.ASSIGNED);
         assignment.setAssignedAt(Timestamp.valueOf(LocalDateTime.now()));
 
+        // Save Assignment
         DeliveryAssignment savedAssignment = deliveryAssignmentRepository.save(assignment);
 
+        // Return Response DTO
         return new DeliveryAssignmentResponseDTO(
                 savedAssignment.getId(),
                 savedAssignment.getOrder().getExternalOrderId(),
@@ -60,16 +71,22 @@ public class DeliveryAssignmentServiceimpl implements DeliveryAssignmentService 
         );
     }
 
+
+    // -------------------------------------------------- GET ASSIGNMENT BY ID
     @Override
     public Optional<DeliveryAssignment> getAssignmentById(Long id) {
         return deliveryAssignmentRepository.findById(id);
     }
 
+
+    // -------------------------------------------------- GET ALL ASSIGNMENTS
     @Override
     public List<DeliveryAssignment> getAllAssignments() {
         return deliveryAssignmentRepository.findAll();
     }
 
+
+    // -------------------------------------------------- UPDATE ASSIGNMENT
     @Override
     public DeliveryAssignment updateAssignment(Long id, DeliveryAssignment assignmentDetails) {
         return deliveryAssignmentRepository.findById(id).map(assignment -> {
@@ -80,6 +97,8 @@ public class DeliveryAssignmentServiceimpl implements DeliveryAssignmentService 
         }).orElseThrow(() -> new RuntimeException("Assignment not found with ID: " + id));
     }
 
+
+    // -------------------------------------------------- DELETE ASSIGNMENT
     @Override
     public void deleteAssignment(Long id) {
         deliveryAssignmentRepository.deleteById(id);

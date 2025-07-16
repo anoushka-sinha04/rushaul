@@ -1,6 +1,6 @@
 package com.rushaul.logisitcs_backend.config;
 
-import com.rushaul.logisitcs_backend.security.JwtAuthenticationFilter;
+import com.rushaul.logisitcs_backend.security.jwt.JwtAuthenticationFilter;
 import com.rushaul.logisitcs_backend.service.impl.UserServiceimpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
+    // -------------------------------------------------- Dependencies
     private final UserServiceimpl userService;
 
     @Autowired
@@ -26,11 +27,13 @@ public class SecurityConfig {
         this.userService = userService;
     }
 
+    // ----------------------------------------- Password Encoder Bean
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // ---------------------------------- Authentication Provider Bean
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -39,11 +42,13 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    // ----------------------------------- Authentication Manager Bean
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    // ------------------------------------ Security Filter Chain Bean
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http

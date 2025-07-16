@@ -14,19 +14,23 @@ import java.util.List;
 @RequestMapping("/api/assignments")
 public class DeliveryAssignmentController {
 
+    // -------------------------------------------------- DEPENDENCIES
     private final DeliveryAssignmentService deliveryAssignmentService;
 
+    // -------------------------------------------------- CONSTRUCTOR
     @Autowired
     public DeliveryAssignmentController(DeliveryAssignmentService deliveryAssignmentService) {
         this.deliveryAssignmentService = deliveryAssignmentService;
     }
 
+    // -------------------------------------------------- ASSIGN DELIVERY
     @PostMapping("/assign")
     public ResponseEntity<DeliveryAssignmentResponseDTO> assignDelivery(@RequestBody DeliveryAssignmentRequestDTO dto) {
         DeliveryAssignmentResponseDTO response = deliveryAssignmentService.assignPersonnel(dto);
         return ResponseEntity.ok(response);
     }
 
+    // -------------------------------------------------- GET ASSIGNMENT BY ID
     @GetMapping("/{id}")
     public ResponseEntity<DeliveryAssignment> getAssignmentById(@PathVariable Long id) {
         return deliveryAssignmentService.getAssignmentById(id)
@@ -34,16 +38,19 @@ public class DeliveryAssignmentController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // -------------------------------------------------- GET ALL ASSIGNMENTS
     @GetMapping
     public ResponseEntity<List<DeliveryAssignment>> getAllAssignments() {
         return ResponseEntity.ok(deliveryAssignmentService.getAllAssignments());
     }
 
+    // -------------------------------------------------- UPDATE ASSIGNMENT
     @PutMapping("/{id}")
     public ResponseEntity<DeliveryAssignment> updateAssignment(@PathVariable Long id, @RequestBody DeliveryAssignment assignmentDetails) {
         return ResponseEntity.ok(deliveryAssignmentService.updateAssignment(id, assignmentDetails));
     }
 
+    // -------------------------------------------------- DELETE ASSIGNMENT
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAssignment(@PathVariable Long id) {
         deliveryAssignmentService.deleteAssignment(id);

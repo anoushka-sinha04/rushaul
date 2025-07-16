@@ -1,4 +1,5 @@
 package com.rushaul.logisitcs_backend.model;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,10 +14,14 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class DeliveryAssignment {
 
+
+    // --------------------------------------------------- Primary Key
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+
+    // ------------------------------------------------- Relationships
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "personnel_id", nullable = false)
     private User personnel;
@@ -25,13 +30,19 @@ public class DeliveryAssignment {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
+
+    // --------------------------------------------- Assignment Details
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AssignmentStatus status;
 
+
+    // ----------------------------------------------------- Timestamps
     @CreationTimestamp
     private Timestamp assignedAt;
+
     @UpdateTimestamp
     private Timestamp confirmedAt;
+
     private Timestamp completedAt;
 }

@@ -1,4 +1,4 @@
-package com.rushaul.logisitcs_backend.security;
+package com.rushaul.logisitcs_backend.security.jwt;
 
 import com.rushaul.logisitcs_backend.security.jwt.JwtService;
 import jakarta.servlet.FilterChain;
@@ -18,28 +18,34 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    // -------------------------------------------------- DEPENDENCIES
     @Autowired
     private JwtService jwtService;
 
     @Autowired
     private UserDetailsService userDetailsService;
 
+    // -------------------------------------------------- FILTER LOGIC
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        // Get the Authorization header
         final String authHeader = request.getHeader("Authorization");
 
+        // If no token or invalid header, continue filter chain
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        // Extract JWT token from header
         String jwt = authHeader.substring(7);
         String username = jwtService.extractUsername(jwt);
 
+        // Validate token and set authentication
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
@@ -53,6 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
+        // Continue filter chain
         filterChain.doFilter(request, response);
     }
 }

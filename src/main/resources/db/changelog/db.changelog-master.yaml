@@ -190,13 +190,3 @@ databaseChangeLog:
             referencedTableName: users
             referencedColumnNames: id
             constraintName: fk_assignments_personnel
-  - changeSet:
-      id: 5
-      author: anoushkasinha
-      changes:
-        - addColumn:
-            tableName: users
-            columns:
-              - column:
-                  name: address
-                  type: VARCHAR(255)

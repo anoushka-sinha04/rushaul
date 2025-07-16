@@ -11,6 +11,9 @@ public interface OrderService {
     Order deleteOrder(Long orderId);
     Order getOrderById(Long orderId);
     List<Order> getOrdersByCustomer(Long id);
-    boolean verifyPickupOtp(Long orderId, String otp);
-    boolean verifyDeliveryOtp(Long orderId, String otp);
+    Order verifyPickupOtp(Long orderId, String otp);
+    Order verifyDeliveryOtp(Long orderId, String otp);
+    Order markOrderAsShipped(Long orderId);
+    Order markOrderAsOutForDelivery(Long orderId);
+
 }

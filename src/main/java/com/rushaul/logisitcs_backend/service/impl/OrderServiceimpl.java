@@ -1,9 +1,7 @@
 package com.rushaul.logisitcs_backend.service.impl;
 import com.rushaul.logisitcs_backend.dto.OrderRequestDTO;
-import com.rushaul.logisitcs_backend.model.Hub;
-import com.rushaul.logisitcs_backend.model.Order;
-import com.rushaul.logisitcs_backend.model.OrderStatus;
-import com.rushaul.logisitcs_backend.model.User;
+import com.rushaul.logisitcs_backend.model.*;
+import com.rushaul.logisitcs_backend.repository.DeliveryAssignmentRepository;
 import com.rushaul.logisitcs_backend.repository.HubRepository;
 import com.rushaul.logisitcs_backend.repository.OrderRepository;
 import com.rushaul.logisitcs_backend.repository.UserRepository;
@@ -29,6 +27,8 @@ public class OrderServiceimpl implements OrderService {
     private OrderRepository orderRepository;
     @Autowired
     private HubRepository hubRepository;
+    @Autowired
+    private DeliveryAssignmentRepository deliveryAssignmentRepository;
 
     @Override
     public Order createOrder(OrderRequestDTO dto) {
@@ -66,25 +66,77 @@ public class OrderServiceimpl implements OrderService {
 
 
     @Override
-    public boolean verifyPickupOtp(Long orderId, String otp) {
-        Order order = orderRepository.findById(orderId).orElseThrow();
-        if (order.getOtpPickup().equals(otp)) {
-            order.setStatus(OrderStatus.SHIPPED);
-            orderRepository.save(order);
-            return true;
+    public Order verifyPickupOtp(Long orderId, String otp) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not Found"));
+        if (!order.getOtpPickup().equals(otp)) {
+            throw new RuntimeException(("Invalid Pickup OTP"));
         }
-        return false;
+        order.setStatus(OrderStatus.SHIPPED);
+        order.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+
+        DeliveryAssignment assignment = deliveryAssignmentRepository
+                .findByOrder(order)
+                .orElseThrow(() -> new RuntimeException("Assignment Not Found"));
+        assignment.setStatus(AssignmentStatus.valueOf("CONFIRMED"));
+        assignment.setConfirmedAt(Timestamp.valueOf(LocalDateTime.now()));
+        deliveryAssignmentRepository.save(assignment);
+        return orderRepository.save(order);
     }
 
     @Override
-    public boolean verifyDeliveryOtp(Long orderId, String otp) {
-        Order order = orderRepository.findById(orderId).orElseThrow();
-        if (order.getOtpDelivery().equals(otp)) {
-            order.setStatus(OrderStatus.DELIVERED);
-            orderRepository.save(order);
-            return true;
+    public Order verifyDeliveryOtp(Long orderId, String otp) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (!order.getOtpDelivery().equals(otp)) {
+            throw new RuntimeException("Invalid Delivery OTP");
         }
-        return false;
+        if (order.getStatus() != OrderStatus.OUT_FOR_DELIVERY) {
+            throw new RuntimeException("Order is not ready for delivery");
+        }
+        order.setStatus(OrderStatus.DELIVERED);
+        order.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+
+        DeliveryAssignment assignment = deliveryAssignmentRepository
+                .findByOrder(order)
+                .orElseThrow(() -> new RuntimeException("Delivery assignment not found"));
+
+        assignment.setStatus(AssignmentStatus.COMPLETED);
+        assignment.setCompletedAt(Timestamp.valueOf(LocalDateTime.now()));
+        deliveryAssignmentRepository.save(assignment);
+
+        return orderRepository.save(order);
+    }
+
+    @Override
+    public Order markOrderAsShipped(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (order.getStatus() != OrderStatus.PICKUP) {
+            throw new RuntimeException("Order must be in PICKUP status to mark as SHIPPED");
+        }
+
+        order.setStatus(OrderStatus.SHIPPED);
+        order.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+
+        return orderRepository.save(order);
+    }
+
+    @Override
+    public Order markOrderAsOutForDelivery(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (order.getStatus() != OrderStatus.SHIPPED) {
+            throw new RuntimeException("Order must be in SHIPPED status to mark as OUT_FOR_DELIVERY");
+        }
+
+        order.setStatus(OrderStatus.OUT_FOR_DELIVERY);
+        order.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+
+        return orderRepository.save(order);
     }
 
 

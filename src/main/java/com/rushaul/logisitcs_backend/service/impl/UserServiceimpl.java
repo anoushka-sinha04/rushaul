@@ -17,34 +17,45 @@ import java.util.Optional;
 @Service
 public class UserServiceimpl implements UserService, UserDetailsService {
 
+    // -------------------------------------------------- DEPENDENCIES
     private final UserRepository userRepository;
 
+    // -------------------------------------------------- CONSTRUCTOR
     @Autowired
     public UserServiceimpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+
+    // -------------------------------------------------- FIND USER BY USERNAME
     @Override
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    // ---------------- USER SERVICE IMPLEMENTATION ----------------
+
+    // -------------------------------------------------- CREATE USER
     @Override
     public User createUser(User user) {
         return userRepository.save(user);
     }
 
+
+    // -------------------------------------------------- GET USER BY ID
     @Override
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
+
+    // -------------------------------------------------- GET ALL USERS
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+
+    // -------------------------------------------------- UPDATE USER
     @Override
     public User updateUser(Long id, User userDetails) {
         return userRepository.findById(id).map(user -> {
@@ -56,6 +67,8 @@ public class UserServiceimpl implements UserService, UserDetailsService {
         }).orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
     }
 
+
+    // -------------------------------------------------- DELETE USER
     @Override
     public User deleteUser(Long id) {
         return userRepository.findById(id).map(user -> {
@@ -64,11 +77,13 @@ public class UserServiceimpl implements UserService, UserDetailsService {
         }).orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
     }
 
-    // --------------- USERDETAILSSERVICE IMPLEMENTATION ---------------
+
+    // ----------------------------- USERDETAILS SERVICE IMPLEMENTATION
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = (User) userRepository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
