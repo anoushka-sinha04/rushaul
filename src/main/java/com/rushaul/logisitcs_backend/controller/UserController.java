@@ -3,7 +3,9 @@ package com.rushaul.logisitcs_backend.controller;
 import com.rushaul.logisitcs_backend.model.User;
 import com.rushaul.logisitcs_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -12,6 +14,8 @@ import java.util.*;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     public UserController(UserService userService) {
@@ -20,7 +24,9 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> createUser (@RequestBody User user) {
-        return ResponseEntity.ok(userService.createUser(user));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User savedUser = userService.createUser(user);
+        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
